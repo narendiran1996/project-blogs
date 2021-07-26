@@ -25,10 +25,13 @@ description: >- # this means to ignore newlines until "baseurl:"
 baseurl: "/project-blogs" # the subpath of your site, e.g. /blog
 url: "https://narendiran1996.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 # twitter_username: jekyllrb
-github_username:  jekyll
+github_username:  narendiran1996
 
 # Build settings
-theme: minima
+# Removed minima theme to use regular (custom) theme - by copying _sass, _includes, assetsm, _layouts folder from 
+# location provided by ---- echo $(bundle info --path minima)
+# theme: minima
+
 plugins:
   - jekyll-feed
 
