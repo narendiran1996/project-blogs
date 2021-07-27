@@ -1,4 +1,5 @@
 bundle exec jekyll serve -- livereload
 
+# remove Gemfile.lock before using the below
 bundle update
 bundle install
