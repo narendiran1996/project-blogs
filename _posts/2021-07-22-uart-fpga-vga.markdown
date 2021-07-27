@@ -87,7 +87,7 @@ The result's can be seen below:
 <img src="https://github.com/narendiran1996/uart-fpga-vga/raw/main/Outputs/UARTVGAOutput2.jpg" alt="UART VGA Output 2 FPGA" style="horizontal-align:right" width="40%">
 </p>
 
-Shown Below is an a by which the image is read from BRAM:
+Shown below is a gif by which the image is read from BRAM:
 <p>
-<img src="https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif" width="400" height="400" />
+<img src="https://github.com/narendiran1996/uart-fpga-vga/raw/main/Outputs/UARTVGAOutputCompressed.gif"  width="70%" height="70%" alt="GIF Output"/>
 </p>
