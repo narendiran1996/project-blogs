@@ -108,3 +108,87 @@ Note: Bit 15 may be fourth Background color depending on mode.
 | Vertical Refresh | 31.468 kHz |
 | Screen Refresh Rate | 60 Hz (fps) |
 
+
+### Image to Memory File
+&emsp; The image to be displayed must be converted into a memory files (.mem or .coe) so as that it can be stored in FPGA. Also, an image contains 24-bit pixels (8 for Red, 8 for Green, 8 for Blue). Hence, these pixel values must be converted to the format supported by the DAC of the FPGA (5-6-5 in case of Zybo). 
+
+The below script can be used to do the conversion to the required format.
+
+```python
+def EightBitsToNBits(adc, N):
+    return bin(int((adc * ((2**N) -1)) / 255.0))[2:].zfill(N)
+def imgToMemoryFile(fileName='m2.jpg', WH={'W': 240, 'H': 120}, RGBFormat=0):
+    # /*
+    # RGBFormat
+    # 0 - 16bit (5-6-5)
+    # 1 - 8bit (grayscale)
+    # 2 - 24bit (8-8-8)
+    # */
+    img = plt.imread(fileName)
+    img = cv2.resize(img, (WH['W'], WH['H']))
+
+    if RGBFormat == 0:
+        EightBitsToNBits_V = np.vectorize(EightBitsToNBits)
+        r = EightBitsToNBits_V(img[:, :, 0], 5).reshape(-1, 1)
+        g = EightBitsToNBits_V(img[:, :, 1], 6).reshape(-1, 1)
+        b = EightBitsToNBits_V(img[:, :, 2], 5).reshape(-1, 1)
+        st = ''
+        wt = ''
+        for i in range(r.shape[0]):
+            st = st + hex(int(r[i][0]+g[i][0]+b[i][0], 2))[2:] + ',\n'
+            wt = wt + hex(int(r[i][0]+g[i][0]+b[i][0], 2))[2:] + '\n'
+    elif RGBFormat == 1:
+        grayImg = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+        grayImg = grayImg.reshape(-1, 1)
+
+        st = ''
+        wt = ''
+        for i in range(grayImg.shape[0]):
+            st = st + hex(grayImg[i][0])[2:] + ',\n'
+            wt = wt + hex(grayImg[i][0])[2:] + '\n'
+
+    elif RGBFormat == 2:
+        r = img[:, :, 0].reshape(-1, 1)
+        g = img[:, :, 1].reshape(-1, 1)
+        b = img[:, :, 2].reshape(-1, 1)
+        st = ''
+        wt = ''
+        for i in range(r.shape[0]):
+            st = st + hex(r[i][0])[2:].zfill(2)+hex(g[i][0])[2:].zfill(2)+hex(b[i][0])[2:].zfill(2) + ',\n'
+            wt = wt + hex(r[i][0])[2:].zfill(2)+hex(g[i][0])[2:].zfill(2)+hex(b[i][0])[2:].zfill(2) + '\n'
+
+    with open('./ImageMemoryFile/MemoryFile.coe', 'w+') as f:
+        f.write('memory_initialization_radix=16;\nmemory_initialization_vector=\n')
+        f.write(st[:-2]+';')
+        f.close()
+    with open('./ImageMemoryFile/MemoryFile.mem', 'w+') as f:
+        f.write(wt[:-1])
+        f.close()
+```
+
+
+&emsp; The complete code along with conversion back from memory file to image can be seen in [imageToMemoryConversion.ipynb](https://github.com/narendiran1996/vga_controller/blob/main/imageToMemoryConversion.ipynb).
+
+## Graphics Mode
+&emsp; The Graphics Mode is used for displaying images onto the monitor. The Block Diagram for using the graphics mode can be seen below:
+
+<p>
+<img src="https://raw.githubusercontent.com/narendiran1996/vga_controller/main/DocsResources/GraphicsModeBlockDiagram.png" alt="Graphics Mode Block Diagram">
+</p>
+
+
+&emsp; The verilog implementation for a simple Graphics Mode VGA controller to display an image is available [here](https://github.com/narendiran1996/vga_controller/tree/main/VivadoProjects/VGA_GraphicsMode_MemBased/VGA_GraphicsMode_MemBased.srcs/sources_1/new).
+
+
+### Graphics Mode output
+
+&emsp;  The output of Graphics Mode for an image of 640 x 360 with 8-bit (Grayscale) bitformat on a 1024 x 768 resolution display can be seen below:
+
+<img src="https://github.com/narendiran1996/vga_controller/raw/main/Outputs/Img_1024_8bit.jpg" alt="Graphics Mode output 1"/>
+
+
+&emsp;  The output of Graphics Mode for an image of 320 x 180 with 16-bit (5-6-5) bitformat on a 1024 x 768 resolution display can be seen below:
+
+<img src="https://github.com/narendiran1996/vga_controller/raw/main/Outputs/Img_1024_16bit.jpg" alt="Graphics Mode output 2"/>
+
+
