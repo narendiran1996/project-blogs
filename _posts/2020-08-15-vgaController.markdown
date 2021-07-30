@@ -167,10 +167,10 @@ def imgToMemoryFile(fileName='m2.jpg', WH={'W': 240, 'H': 120}, RGBFormat=0):
 ```
 
 
-&emsp; The complete code along with conversion back from memory file to image can be seen in [imageToMemoryConversion.ipynb](https://github.com/narendiran1996/vga_controller/blob/main/imageToMemoryConversion.ipynb).
+&emsp; The script to convert from image to memory file and from memory file to image can be seen in [imageToMemoryConversion.ipynb](https://github.com/narendiran1996/vga_controller/blob/main/imageToMemoryConversion.ipynb).
 
 ## Graphics Mode
-&emsp; The Graphics Mode is used for displaying images onto the monitor. The Block Diagram for using the graphics mode can be seen below:
+&emsp; The Graphics Mode is used for displaying images onto the display. The Block Diagram for using the graphics mode can be seen below:
 
 <p>
 <img src="https://raw.githubusercontent.com/narendiran1996/vga_controller/main/DocsResources/GraphicsModeBlockDiagram.png" alt="Graphics Mode Block Diagram">
@@ -178,6 +178,7 @@ def imgToMemoryFile(fileName='m2.jpg', WH={'W': 240, 'H': 120}, RGBFormat=0):
 
 
 &emsp; The verilog implementation for a simple Graphics Mode VGA controller to display an image is available [here](https://github.com/narendiran1996/vga_controller/tree/main/VivadoProjects/VGA_GraphicsMode_MemBased/VGA_GraphicsMode_MemBased.srcs/sources_1/new).
+
 
 
 ### Graphics Mode output
@@ -192,3 +193,100 @@ def imgToMemoryFile(fileName='m2.jpg', WH={'W': 240, 'H': 120}, RGBFormat=0):
 <img src="https://github.com/narendiran1996/vga_controller/raw/main/Outputs/Img_1024_16bit.jpg" alt="Graphics Mode output 2"/>
 
 
+### Graphics Mode - Basic Operations
+
+
+&emsp; Also, operations such as rotation and scaling were done and controlled with switches available in FPGA. The block diagram for this design is shown below and the source code is available [here](https://github.com/narendiran1996/vga_controller/tree/main/VivadoProjects/VGA_GraphicsMode_BaiscOp/VGA_GraphicsMode_BaiscOp.srcs).
+
+<p>
+<img src="https://raw.githubusercontent.com/narendiran1996/vga_controller/main/DocsResources/GraphicsModeBlockDiagram_BasicOperation.png" alt="graphics mode block diagram basic operation"/>
+</p>
+
+
+&emsp; The output for various configuration of input can be seen below.
+
+<img src="https://github.com/narendiran1996/vga_controller/raw/main/DocsResources/GraphicsMode_BasicOperation_Output.png" alt="graphics mode basic operation Output"/>
+
+
+## Text Mode
+
+&emsp; The Text Mode display characters onto to display. 
+There are a variety of modes for displaying characters depending on the character size, resolution, etc.
+Here, 8 x 8 characters are used with 640 x 480 resolution giving a Text Resolution of 80 x 40.
+Hence, a total of 4800 characters can be displayed at a time.
+
+
+### Character ROM
+&emsp; Before going to further processing, a character set must be formed.
+A script to convert fonts to complete character set with ASCII characters is shown below and is available [here](https://github.com/narendiran1996/vga_controller/blob/main/TextMode_CharacterROMCreation.ipynb).
+This script gives the memory file for the character ROM which will used to display characters onto the display.
+
+```python
+def getCharacterMatrix(character=' ', display=False, fontName = ""):
+    font = ImageFont.truetype(fontName, 8)
+    width = 8
+    height = 8
+    im = Image.new("L", (width, height))
+    # im = Image.new("1", (width, height), (0, 0, 0))
+    draw = ImageDraw.Draw(im)
+    draw.text((0, 0), character, 1, font=font)
+
+    if display:
+        plt.imshow(im, cmap='gray')
+        plt.show()
+
+    gg = np.array(im).flatten()
+    st = ''
+    for i in range(gg.size):
+        st=st+str(gg[i])
+    return st
+
+def FontToMem(fontName=''):
+    st = ''
+    for i in range(0,256,1):
+        gg = getCharacterMatrix(chr(i),fontName=fontName, display=False)
+        ## reversing as they wer reversed
+        st = st + gg[::-1] +'\n'
+    with open('./TextModeMemoryFiles/CharacterROM_ASCII.mem', 'w+') as fil:
+        fil.write(st[:-1])
+        fil.close()
+
+    
+FontToMem("Fonts/family-basic.ttf")
+```
+
+
+### Text Buffer
+&emsp; The Text Buffer is a character memory consisting the index of characters to be displayed onto
+the screen.
+These index corresponds to the character ROM addresses.
+They consist basically the ASCII characters.
+Creation of Text Buffer for displaying basic text is shown below.
+
+```python
+def characterBufferToMem(characterBuffer):
+    st = ''
+    for i in range(len(characterBuffer)):
+        st = st + hex(ord(characterBuffer[i]))[2:].zfill(2) + '\n'
+    for j in range(len(characterBuffer), 80*60):
+        st = st + hex(ord(' '))[2:].zfill(2) + '\n'
+    with open('TextModeMemoryFiles/characterBuffer80x60.mem', 'w+') as fil:
+        # print(st[::-1])
+        fil.write(st[:-1])
+        fil.close()
+characterBufferToMem("VGA Controller --- narendiran1996")
+```
+
+&emsp; The Block diagram for Text Mode to display basic text can be seen below.
+The verilog implementation of the same is available in [VGA_TextMode_HelloWorld](https://github.com/narendiran1996/vga_controller/tree/main/VivadoProjects/VGA_TextMode_HelloWorld/VGA_TextMode_HelloWorld.srcs).
+
+<img src="https://github.com/narendiran1996/vga_controller/raw/main/DocsResources/TextModeBlockDiagram.png" alt="Text Mode Block Diagram"/>
+
+
+### Text Mode - Output
+&emsp; The outputs of Text mode for a 640x480 resolution with 8x8 characters are shown below.
+
+<img src="https://github.com/narendiran1996/vga_controller/raw/main/Outputs/TextMode_1.jpg" alt="Text Mode Output 1"/>
+</br>
+
+<img src="https://github.com/narendiran1996/vga_controller/raw/main/Outputs/TextMode_2a.jpg" alt="Text Mode Output 2"/>
