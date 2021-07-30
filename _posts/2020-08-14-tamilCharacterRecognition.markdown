@@ -217,3 +217,6 @@ Then the recognized character will be visible below the canvas.
 <img src="https://raw.githubusercontent.com/narendiran1996/tamil_character_recognition/main/Outputs/Output2.png" width="31%">
 <img src="https://raw.githubusercontent.com/narendiran1996/tamil_character_recognition/main/Outputs/Output3.png" width="31%">
 </p>
+
+
+&emsp; The complete source code is available [here](https://github.com/narendiran1996/tamil_character_recognition).

@@ -91,3 +91,6 @@ Shown below is a gif by which the image is read from BRAM:
 <p>
 <img src="https://github.com/narendiran1996/uart-fpga-vga/raw/main/Outputs/UARTVGAOutputCompressed.gif"  width="70%" height="70%" alt="GIF Output"/>
 </p>
+
+
+&emsp; The complete source code is available [here](https://github.com/narendiran1996/uart-fpga-vga).
