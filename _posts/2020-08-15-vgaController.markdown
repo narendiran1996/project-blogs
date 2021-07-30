@@ -287,6 +287,8 @@ The verilog implementation of the same is available in [VGA_TextMode_HelloWorld]
 &emsp; The outputs of Text mode for a 640x480 resolution with 8x8 characters are shown below.
 
 <img src="https://github.com/narendiran1996/vga_controller/raw/main/Outputs/TextMode_1.jpg" alt="Text Mode Output 1"/>
-</br>
+\
+&nbsp;
+
 
 <img src="https://github.com/narendiran1996/vga_controller/raw/main/Outputs/TextMode_2a.jpg" alt="Text Mode Output 2"/>
